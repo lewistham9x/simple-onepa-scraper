@@ -46,24 +46,26 @@ export class AppService {
   }
 
   async searchForFacility(
-    outlet = 'boonlay',
+    outlets = ['boonlay', 'outram', 'clementi', 'jurongeast', 'queenstown'],
     time = 'evening',
     days = 14,
   ): Promise<any> {
-    const facilities = await this.getFacilities(outlet, time);
-
     const availabilityPromises = [];
 
-    const today = new Date();
+    for (const outlet of outlets) {
+      const facilities = await this.getFacilities(outlet, time);
 
-    const toDate = new Date().setDate(new Date().getDate() + days);
+      const today = new Date();
 
-    for (let d = today; d <= new Date(toDate); d.setDate(d.getDate() + 1)) {
-      availabilityPromises.push(
-        ...facilities.map((facility) =>
-          this.getAvailability(facility.name, this.formatDate(d)),
-        ),
-      );
+      const toDate = new Date().setDate(new Date().getDate() + days);
+
+      for (let d = today; d <= new Date(toDate); d.setDate(d.getDate() + 1)) {
+        availabilityPromises.push(
+          ...facilities.map((facility) =>
+            this.getAvailability(facility.name, this.formatDate(d)),
+          ),
+        );
+      }
     }
 
     const availability = await Promise.all(availabilityPromises);
