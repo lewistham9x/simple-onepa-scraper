@@ -46,19 +46,17 @@ export class AppService {
   }
 
   async searchForFacility(
-    outlet = 'clementi',
+    outlet = 'boonlay',
     time = 'evening',
     days = 14,
   ): Promise<any> {
     const facilities = await this.getFacilities(outlet, time);
 
-    console.log(facilities);
-
     const availabilityPromises = [];
 
     const today = new Date();
 
-    const toDate = today.setDate(today.getDate() + days);
+    const toDate = new Date().setDate(new Date().getDate() + days);
 
     for (let d = today; d <= new Date(toDate); d.setDate(d.getDate() + 1)) {
       availabilityPromises.push(
@@ -95,7 +93,9 @@ export class AppService {
     flattened = [].concat(...flattened);
 
     flattened.sort(function (a, b) {
-      return ('' + b.startTime).localeCompare(a.startTime);
+      return ('' + b.startTime.split('T')[1]).localeCompare(
+        a.startTime.split('T')[1],
+      );
     });
 
     return flattened;
